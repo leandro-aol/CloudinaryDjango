@@ -19,10 +19,11 @@ class ItemsSerializer(serializers.ModelSerializer):
         
         # imagemURL = cloudinary.utils.cloudinary_url(instance.image, width = 100, height = 150, crop = 'fill', quality = '30')
         imagemURL = cloudinary.utils.cloudinary_url('DjangoAPI/' + instance.image)
-        date = parse(representation['created'], ignoretz = True)
-        
         representation['image'] = imagemURL[0]
+        
+        date = parse(representation['created'], ignoretz = True)
         representation['created'] = naturalday(date)
+        
         return representation
 
     def get_validation_exclusions(self):
