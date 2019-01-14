@@ -1,7 +1,7 @@
 from cloudinary.templatetags import cloudinary
 from cloudinary import uploader
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from random import randint
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -23,8 +23,8 @@ class ItemsView(APIView):
 
     def upload_image_cloudinary(self, request, imageName):
         uploader.upload(
-            request.FILES['ImageFile'],
-            public_id = imageName,
+            request.FILES['imageFile'],
+            public_id = 'DjangoAPI/' + imageName,
             crop = 'limit',
             width = 2000,
             height = 2000,
@@ -53,9 +53,12 @@ class ItemsView(APIView):
 
         if serializer.is_valid():
             try:
-                imageName = '{0}_v{1}'.format(request.FILES['ImageFile'].name.split('.')[0], randint(0, 100))
+                imageName = '{0}_v{1}'.format(request.FILES['imageFile'].name.split('.')[0], randint(0, 100))
                 self.upload_image_cloudinary(request, imageName)
-                serializer.save(image = imageName)
+                # serializer.save(image = imageName)
+                
+                imagemURL = cloudinary.utils.cloudinary_url(imageName)
+                serializer.save(image = imagemURL[0])
                 return Response(serializer.data, status = status.HTTP_201_CREATED)
             except Exception:
                 return Response({'imagem': 'Envie uma imagem válida'}, status = status.HTTP_400_BAD_REQUEST)
@@ -68,7 +71,10 @@ class ItemView(APIView):
     serializer_class = ItemsSerializer
 
     def get_object(self, pk):
-        return Items.objects.get(pk=pk)
+        try:
+            return Items.objects.get(pk=pk)
+        except Items.DoesNotExist:
+            raise Http404
 
     def get(self, request, pk):
         item = self.get_object(pk)
