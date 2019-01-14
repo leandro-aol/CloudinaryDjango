@@ -9,7 +9,7 @@ from model_utils.models import TimeStampedModel
 class Items(TimeStampedModel):
 
     name = models.CharField(max_length = 25, verbose_name = 'Name')
-    image = models.CharField(max_length = 100, verbose_name = 'Image URL')
+    imageURL = models.CharField(max_length = 100, verbose_name = 'Image URL')
     category = models.CharField(max_length = 15, verbose_name = 'Category')
     comment = models.CharField(max_length = 250, verbose_name = 'Comment')
     imageFile = CloudinaryField('imageFile')

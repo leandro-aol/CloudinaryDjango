@@ -7,11 +7,11 @@ from dateutil.parser import parse
 
 class ItemsSerializer(serializers.ModelSerializer):
 
-    image = serializers.CharField(required=False)
+    imageURL = serializers.CharField(required=False)
 
     class Meta:
         model = Items
-        fields = ('id', 'name', 'image', 'category', 'comment', 'created')
+        fields = ('id', 'name', 'imageURL', 'category', 'comment', 'created')
         # fields = '__all__'
 
     def to_representation(self, instance):

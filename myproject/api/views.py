@@ -24,7 +24,7 @@ class ItemsView(APIView):
     def upload_image_cloudinary(self, request, imageName):
         uploader.upload(
             request.FILES['imageFile'],
-            public_id = 'DjangoAPI/' + imageName,
+            public_id = imageName,
             crop = 'limit',
             width = 2000,
             height = 2000,
@@ -55,10 +55,11 @@ class ItemsView(APIView):
             try:
                 imageName = '{0}_v{1}'.format(request.FILES['imageFile'].name.split('.')[0], randint(0, 100))
                 self.upload_image_cloudinary(request, imageName)
-                # serializer.save(image = imageName)
                 
-                imagemURL = cloudinary.utils.cloudinary_url(imageName)
-                serializer.save(image = imagemURL[0])
+                imagemURL = cloudinary.utils.cloudinary_url('DjangoAPI/' + imageName)
+                
+                serializer.save(imageURL = imagemURL[0])
+
                 return Response(serializer.data, status = status.HTTP_201_CREATED)
             except Exception:
                 return Response({'imagem': 'Envie uma imagem válida'}, status = status.HTTP_400_BAD_REQUEST)
@@ -96,5 +97,5 @@ class ItemView(APIView):
             item = self.get_object(pk)
             item.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except Exception as message:
+        except Exception:
             return Response(status=status.HTTP_404_NOT_FOUND)
